@@ -52,7 +52,7 @@ public class CustomerServiceImpl implements CustomerService {
 				break;
 			}
 		}
-		if(available==null)throw new Exception("No value present");
+		if(available==null)throw new Exception();
 
 
 		available.getCab().setAvailable(false);
