@@ -1,6 +1,7 @@
 package com.driver.services.impl;
 
 import com.driver.model.*;
+import com.driver.repository.CabRepository;
 import com.driver.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,8 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Autowired
 	TripBookingRepository tripBookingRepository2;
+	@Autowired
+	CabRepository cabRepository;
 
 	@Override
 	public void register(Customer customer) {
@@ -49,7 +52,7 @@ public class CustomerServiceImpl implements CustomerService {
 				break;
 			}
 		}
-		if(available==null)throw new Exception("No cab available!");
+		if(available==null)throw new Exception("No value present");
 
 
 		available.getCab().setAvailable(false);
@@ -75,26 +78,27 @@ public class CustomerServiceImpl implements CustomerService {
 	public void cancelTrip(Integer tripId){
 		//Cancel the trip having given trip Id and update TripBooking attributes accordingly
 		TripBooking tripBooking=tripBookingRepository2.findById(tripId).get();
-		Driver driver=tripBooking.getDriver();
+
 
 		tripBooking.setStatus(TripStatus.CANCELED);
-		Cab cab=driver.getCab();
+		Cab cab=tripBooking.getDriver().getCab();
 		cab.setAvailable(true);
 
-		driverRepository2.save(driver);
+		cabRepository.save(cab);
+		tripBookingRepository2.save(tripBooking);
+
 	}
 
 	@Override
 	public void completeTrip(Integer tripId){
 		//Complete the trip having given trip Id and update TripBooking attributes accordingly
 		TripBooking tripBooking=tripBookingRepository2.findById(tripId).get();
-		Driver driver=tripBooking.getDriver();
 
 		tripBooking.setStatus(TripStatus.COMPLETED);
-		Cab cab=driver.getCab();
+		Cab cab=tripBooking.getDriver().getCab();
 		cab.setAvailable(true);
 
-		driverRepository2.save(driver);
-
+		cabRepository.save(cab);
+		tripBookingRepository2.save(tripBooking);
 	}
 }
